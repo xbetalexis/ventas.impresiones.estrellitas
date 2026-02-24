@@ -3,21 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Control de Ventas - Impresiones</title>
+<title>IMPRESIONES ESTRELLITAS</title>
 
 <style>
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f4f6f9;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #ffd6e8, #d6f0ff);
 }
 
 h1 {
     text-align: center;
-    background: #ff6b8a;
+    background: linear-gradient(90deg, #ff9ecb, #9ed8ff);
     color: white;
-    padding: 15px;
+    padding: 18px;
     margin: 0;
+    font-size: 22px;
+    letter-spacing: 2px;
 }
 
 .container {
@@ -25,69 +27,89 @@ h1 {
 }
 
 .card {
-    background: white;
+    background: rgba(255,255,255,0.9);
     padding: 15px;
     margin-bottom: 15px;
-    border-radius: 10px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    backdrop-filter: blur(5px);
 }
 
-input, select {
+.card h3 {
+    color: #ff7eb9;
+    margin-top: 0;
+}
+
+input {
     width: 100%;
-    padding: 8px;
+    padding: 10px;
     margin-bottom: 8px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
+    border-radius: 8px;
+    border: 1px solid #ffd1e6;
+    background: #fff;
+    font-size: 14px;
 }
 
 button {
-    padding: 8px 12px;
+    padding: 9px 14px;
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
-    margin-top: 5px;
+    font-weight: bold;
 }
 
-.btn-add { background: #28a745; color: white; }
-.btn-delete { background: red; color: white; }
-.btn-edit { background: orange; color: white; }
+.btn-add {
+    background: linear-gradient(90deg, #ff9ecb, #9ed8ff);
+    color: white;
+}
+
+.btn-delete {
+    background: #ff6b6b;
+    color: white;
+}
+
+.btn-edit {
+    background: #ffc86b;
+    color: white;
+}
 
 .total {
     font-size: 18px;
     font-weight: bold;
-    background: #ffe5ec;
-    padding: 10px;
-    border-radius: 8px;
+    background: linear-gradient(90deg, #ffd6e8, #d6f0ff);
+    padding: 12px;
+    border-radius: 12px;
     text-align: center;
+    color: #444;
 }
 </style>
 </head>
 <body>
 
-<h1>Control de Ventas - Emprendimiento</h1>
+<h1>🌸 IMPRESIONES ESTRELLITAS 🩵</h1>
 
 <div class="container">
 
 <div class="card">
-<h3>Agregar Venta</h3>
+<h3>Agregar Venta ✨</h3>
 <input type="date" id="fecha">
-<input type="text" id="detalle" placeholder="Detalle (Ej: 85 pág A4 color anillado)">
+<input type="text" id="detalle" placeholder="Detalle (Ej: Cuadernillo 85 pág color)">
 <input type="number" id="monto" placeholder="Monto">
 <button class="btn-add" onclick="agregarVenta()">Guardar Venta</button>
 </div>
 
 <div class="card">
-<h3>Filtrar por mes</h3>
+<h3>Filtrar por mes 📅</h3>
 <input type="month" id="filtroMes" onchange="render()">
 </div>
 
 <div class="card">
-<h3>Ventas Registradas</h3>
+<h3>Ventas Registradas 💖</h3>
 <div id="lista"></div>
 </div>
 
 <div class="total">
-Total del Mes: $<span id="totalMes">0</span>
+Total del Mes: $<span id="totalMes">0</span> 🌟
 </div>
 
 </div>
@@ -150,7 +172,7 @@ function render(){
             totalMes += Number(v.monto);
 
             lista.innerHTML += `
-            <div style="border-bottom:1px solid #ddd; padding:8px 0;">
+            <div style="border-bottom:1px solid #eee; padding:8px 0;">
                 <strong>${v.fecha}</strong><br>
                 ${v.detalle}<br>
                 $${v.monto}<br>
