@@ -6,81 +6,80 @@
 <title>IMPRESIONES ESTRELLITAS</title>
 
 <style>
-body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #ffd6e8, #d6f0ff);
+body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+    background: linear-gradient(135deg,#ffd6e8,#d6f0ff);
 }
 
-h1 {
-    text-align: center;
-    background: linear-gradient(90deg, #ff9ecb, #9ed8ff);
-    color: white;
-    padding: 18px;
-    margin: 0;
-    font-size: 22px;
-    letter-spacing: 2px;
+h1{
+    text-align:center;
+    padding:20px;
+    margin:0;
+    background:linear-gradient(90deg,#ff9ecb,#9ed8ff);
+    color:white;
+    letter-spacing:2px;
 }
 
-.container {
-    padding: 15px;
+.grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:15px;
+    padding:15px;
 }
 
-.card {
-    background: rgba(255,255,255,0.9);
-    padding: 15px;
-    margin-bottom: 15px;
-    border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-    backdrop-filter: blur(5px);
+.day{
+    background:white;
+    border-radius:15px;
+    padding:10px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.08);
+    display:flex;
+    flex-direction:column;
 }
 
-.card h3 {
-    color: #ff7eb9;
-    margin-top: 0;
+.day h2{
+    margin:0 0 8px 0;
+    color:#ff7eb9;
+    font-size:16px;
 }
 
-input {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 8px;
-    border-radius: 8px;
-    border: 1px solid #ffd1e6;
-    background: #fff;
-    font-size: 14px;
+textarea{
+    flex:1;
+    resize:none;
+    border:1px solid #ffd1e6;
+    border-radius:8px;
+    padding:8px;
+    font-size:14px;
 }
 
-button {
-    padding: 9px 14px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: bold;
+.total-box{
+    grid-column:span 2;
+    background:linear-gradient(90deg,#ffd6e8,#d6f0ff);
+    padding:15px;
+    border-radius:15px;
+    text-align:center;
+    font-weight:bold;
+    font-size:18px;
 }
 
-.btn-add {
-    background: linear-gradient(90deg, #ff9ecb, #9ed8ff);
-    color: white;
+button{
+    margin-top:5px;
+    border:none;
+    border-radius:8px;
+    padding:6px;
+    cursor:pointer;
+    background:#ffc86b;
+    color:white;
+    font-weight:bold;
 }
 
-.btn-delete {
-    background: #ff6b6b;
-    color: white;
-}
-
-.btn-edit {
-    background: #ffc86b;
-    color: white;
-}
-
-.total {
-    font-size: 18px;
-    font-weight: bold;
-    background: linear-gradient(90deg, #ffd6e8, #d6f0ff);
-    padding: 12px;
-    border-radius: 12px;
-    text-align: center;
-    color: #444;
+@media(max-width:600px){
+    .grid{
+        grid-template-columns:1fr;
+    }
+    .total-box{
+        grid-column:span 1;
+    }
 }
 </style>
 </head>
@@ -88,105 +87,71 @@ button {
 
 <h1>🌸 IMPRESIONES ESTRELLITAS 🩵</h1>
 
-<div class="container">
+<div class="grid">
 
-<div class="card">
-<h3>Agregar Venta ✨</h3>
-<input type="date" id="fecha">
-<input type="text" id="detalle" placeholder="Detalle (Ej: Cuadernillo 85 pág color)">
-<input type="number" id="monto" placeholder="Monto">
-<button class="btn-add" onclick="agregarVenta()">Guardar Venta</button>
+<div class="day">
+<h2>Lunes</h2>
+<textarea id="lunes" placeholder="Anotar ventas del día..."></textarea>
+<button onclick="borrarDia('lunes')">Borrar</button>
 </div>
 
-<div class="card">
-<h3>Filtrar por mes 📅</h3>
-<input type="month" id="filtroMes" onchange="render()">
+<div class="day">
+<h2>Martes</h2>
+<textarea id="martes"></textarea>
+<button onclick="borrarDia('martes')">Borrar</button>
 </div>
 
-<div class="card">
-<h3>Ventas Registradas 💖</h3>
-<div id="lista"></div>
+<div class="day">
+<h2>Miércoles</h2>
+<textarea id="miercoles"></textarea>
+<button onclick="borrarDia('miercoles')">Borrar</button>
 </div>
 
-<div class="total">
-Total del Mes: $<span id="totalMes">0</span> 🌟
+<div class="day">
+<h2>Jueves</h2>
+<textarea id="jueves"></textarea>
+<button onclick="borrarDia('jueves')">Borrar</button>
+</div>
+
+<div class="day">
+<h2>Viernes</h2>
+<textarea id="viernes"></textarea>
+<button onclick="borrarDia('viernes')">Borrar</button>
+</div>
+
+<div class="day">
+<h2>Sábado</h2>
+<textarea id="sabado"></textarea>
+<button onclick="borrarDia('sabado')">Borrar</button>
+</div>
+
+<div class="day">
+<h2>Domingo</h2>
+<textarea id="domingo"></textarea>
+<button onclick="borrarDia('domingo')">Borrar</button>
+</div>
+
+<div class="total-box">
+Total semanal (manual): $ <input type="number" id="totalSemana" style="width:120px;border-radius:8px;border:1px solid #ffd1e6;padding:5px;">
 </div>
 
 </div>
 
 <script>
-let ventas = JSON.parse(localStorage.getItem("ventas")) || [];
-let editIndex = null;
+const dias=["lunes","martes","miercoles","jueves","viernes","sabado","domingo"];
 
-function guardar() {
-    localStorage.setItem("ventas", JSON.stringify(ventas));
-}
-
-function agregarVenta() {
-    const fecha = document.getElementById("fecha").value;
-    const detalle = document.getElementById("detalle").value;
-    const monto = document.getElementById("monto").value;
-
-    if(!fecha || !detalle || !monto) return;
-
-    if(editIndex !== null){
-        ventas[editIndex] = {fecha, detalle, monto};
-        editIndex = null;
-    } else {
-        ventas.push({fecha, detalle, monto});
-    }
-
-    guardar();
-    limpiarCampos();
-    render();
-}
-
-function limpiarCampos(){
-    document.getElementById("fecha").value = "";
-    document.getElementById("detalle").value = "";
-    document.getElementById("monto").value = "";
-}
-
-function eliminar(index){
-    ventas.splice(index, 1);
-    guardar();
-    render();
-}
-
-function editar(index){
-    const venta = ventas[index];
-    document.getElementById("fecha").value = venta.fecha;
-    document.getElementById("detalle").value = venta.detalle;
-    document.getElementById("monto").value = venta.monto;
-    editIndex = index;
-}
-
-function render(){
-    const lista = document.getElementById("lista");
-    const filtroMes = document.getElementById("filtroMes").value;
-    lista.innerHTML = "";
-    let totalMes = 0;
-
-    ventas.forEach((v, index) => {
-        if(!filtroMes || v.fecha.startsWith(filtroMes)){
-            totalMes += Number(v.monto);
-
-            lista.innerHTML += `
-            <div style="border-bottom:1px solid #eee; padding:8px 0;">
-                <strong>${v.fecha}</strong><br>
-                ${v.detalle}<br>
-                $${v.monto}<br>
-                <button class="btn-edit" onclick="editar(${index})">Editar</button>
-                <button class="btn-delete" onclick="eliminar(${index})">Eliminar</button>
-            </div>
-            `;
-        }
+dias.forEach(dia=>{
+    const campo=document.getElementById(dia);
+    campo.value=localStorage.getItem(dia)||"";
+    campo.addEventListener("input",()=>{
+        localStorage.setItem(dia,campo.value);
     });
+});
 
-    document.getElementById("totalMes").innerText = totalMes;
+function borrarDia(dia){
+    localStorage.removeItem(dia);
+    document.getElementById(dia).value="";
 }
-
-render();
 </script>
 
 </body>
