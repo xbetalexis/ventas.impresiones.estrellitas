@@ -34,7 +34,7 @@ input[type="month"]{
 
 .grid{
     display:grid;
-    grid-template-columns:repeat(2,1fr);
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
     gap:15px;
     padding:15px;
 }
@@ -42,7 +42,7 @@ input[type="month"]{
 .day{
     background:white;
     border-radius:15px;
-    padding:10px;
+    padding:12px;
     box-shadow:0 5px 15px rgba(0,0,0,0.08);
 }
 
@@ -55,7 +55,7 @@ input[type="month"]{
 .fecha{
     font-size:13px;
     color:#777;
-    margin-bottom:5px;
+    margin-bottom:6px;
 }
 
 textarea{
@@ -64,8 +64,8 @@ textarea{
     resize:none;
     border:1px solid #ffd1e6;
     border-radius:8px;
-    padding:5px;
-    margin-bottom:5px;
+    padding:6px;
+    margin-bottom:6px;
 }
 
 input[type="number"]{
@@ -73,12 +73,12 @@ input[type="number"]{
     padding:6px;
     border-radius:8px;
     border:1px solid #ffd1e6;
-    margin-bottom:5px;
+    margin-bottom:6px;
 }
 
 button{
     width:100%;
-    padding:6px;
+    padding:7px;
     border:none;
     border-radius:8px;
     font-weight:bold;
@@ -97,22 +97,13 @@ button{
 }
 
 .total-box{
-    grid-column:span 2;
+    margin:20px;
     background:linear-gradient(90deg,#ffd6e8,#d6f0ff);
     padding:15px;
     border-radius:15px;
     text-align:center;
     font-weight:bold;
-    font-size:18px;
-}
-
-@media(max-width:600px){
-    .grid{
-        grid-template-columns:1fr;
-    }
-    .total-box{
-        grid-column:span 1;
-    }
+    font-size:20px;
 }
 </style>
 </head>
@@ -132,33 +123,41 @@ Total del Mes: $ <span id="totalMes">0</span> 🌟
 </div>
 
 <script>
-const diasSemana=["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+const diasSemana=["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"];
 const planner=document.getElementById("planner");
 const mesSelector=document.getElementById("mesSelector");
 let datos=JSON.parse(localStorage.getItem("plannerEstrellitas"))||{};
 
-mesSelector.addEventListener("change",crearSemana);
+function iniciarMesActual(){
+    const hoy=new Date();
+    const mesActual=hoy.toISOString().slice(0,7);
+    mesSelector.value=mesActual;
+    crearMes();
+}
 
-function crearSemana(){
+mesSelector.addEventListener("change",crearMes);
+
+function crearMes(){
     planner.innerHTML="";
     const mes=mesSelector.value;
     if(!mes) return;
 
     const [year,month]=mes.split("-");
-    let fecha=new Date(year,month-1,1);
+    const diasDelMes=new Date(year,month,0).getDate();
     let total=0;
 
-    for(let i=0;i<7;i++){
+    for(let dia=1; dia<=diasDelMes; dia++){
+        const fecha=new Date(year,month-1,dia);
         const fechaTexto=fecha.toISOString().split("T")[0];
+        const nombreDia=diasSemana[fecha.getDay()];
         const clave=fechaTexto;
 
         const guardado=datos[clave]||{detalle:"",importe:""};
-
         total+=Number(guardado.importe||0);
 
         planner.innerHTML+=`
         <div class="day">
-            <h2>${diasSemana[i]}</h2>
+            <h2>${nombreDia}</h2>
             <div class="fecha">${fechaTexto}</div>
             <textarea id="detalle-${clave}" placeholder="Ventas del día...">${guardado.detalle}</textarea>
             <input type="number" id="importe-${clave}" placeholder="Importe del día" value="${guardado.importe}">
@@ -166,8 +165,6 @@ function crearSemana(){
             <button class="btn-borrar" onclick="borrarDia('${clave}')">Borrar</button>
         </div>
         `;
-
-        fecha.setDate(fecha.getDate()+1);
     }
 
     document.getElementById("totalMes").innerText=total;
@@ -176,17 +173,18 @@ function crearSemana(){
 function guardarDia(clave){
     const detalle=document.getElementById("detalle-"+clave).value;
     const importe=document.getElementById("importe-"+clave).value;
-
     datos[clave]={detalle,importe};
     localStorage.setItem("plannerEstrellitas",JSON.stringify(datos));
-    crearSemana();
+    crearMes();
 }
 
 function borrarDia(clave){
     delete datos[clave];
     localStorage.setItem("plannerEstrellitas",JSON.stringify(datos));
-    crearSemana();
+    crearMes();
 }
+
+iniciarMesActual();
 </script>
 
 </body>
