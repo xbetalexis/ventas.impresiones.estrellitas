@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Control de Ventas - Impresiones</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+}
+
+h1 {
+    text-align: center;
+    background: #ff6b8a;
+    color: white;
+    padding: 15px;
+    margin: 0;
+}
+
+.container {
+    padding: 15px;
+}
+
+.card {
+    background: white;
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+input, select {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 5px;
+}
+
+.btn-add { background: #28a745; color: white; }
+.btn-delete { background: red; color: white; }
+.btn-edit { background: orange; color: white; }
+
+.total {
+    font-size: 18px;
+    font-weight: bold;
+    background: #ffe5ec;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+}
+</style>
+</head>
+<body>
+
+<h1>Control de Ventas - Emprendimiento</h1>
+
+<div class="container">
+
+<div class="card">
+<h3>Agregar Venta</h3>
+<input type="date" id="fecha">
+<input type="text" id="detalle" placeholder="Detalle (Ej: 85 pág A4 color anillado)">
+<input type="number" id="monto" placeholder="Monto">
+<button class="btn-add" onclick="agregarVenta()">Guardar Venta</button>
+</div>
+
+<div class="card">
+<h3>Filtrar por mes</h3>
+<input type="month" id="filtroMes" onchange="render()">
+</div>
+
+<div class="card">
+<h3>Ventas Registradas</h3>
+<div id="lista"></div>
+</div>
+
+<div class="total">
+Total del Mes: $<span id="totalMes">0</span>
+</div>
+
+</div>
+
+<script>
+let ventas = JSON.parse(localStorage.getItem("ventas")) || [];
+let editIndex = null;
+
+function guardar() {
+    localStorage.setItem("ventas", JSON.stringify(ventas));
+}
+
+function agregarVenta() {
+    const fecha = document.getElementById("fecha").value;
+    const detalle = document.getElementById("detalle").value;
+    const monto = document.getElementById("monto").value;
+
+    if(!fecha || !detalle || !monto) return;
+
+    if(editIndex !== null){
+        ventas[editIndex] = {fecha, detalle, monto};
+        editIndex = null;
+    } else {
+        ventas.push({fecha, detalle, monto});
+    }
+
+    guardar();
+    limpiarCampos();
+    render();
+}
+
+function limpiarCampos(){
+    document.getElementById("fecha").value = "";
+    document.getElementById("detalle").value = "";
+    document.getElementById("monto").value = "";
+}
+
+function eliminar(index){
+    ventas.splice(index, 1);
+    guardar();
+    render();
+}
+
+function editar(index){
+    const venta = ventas[index];
+    document.getElementById("fecha").value = venta.fecha;
+    document.getElementById("detalle").value = venta.detalle;
+    document.getElementById("monto").value = venta.monto;
+    editIndex = index;
+}
+
+function render(){
+    const lista = document.getElementById("lista");
+    const filtroMes = document.getElementById("filtroMes").value;
+    lista.innerHTML = "";
+    let totalMes = 0;
+
+    ventas.forEach((v, index) => {
+        if(!filtroMes || v.fecha.startsWith(filtroMes)){
+            totalMes += Number(v.monto);
+
+            lista.innerHTML += `
+            <div style="border-bottom:1px solid #ddd; padding:8px 0;">
+                <strong>${v.fecha}</strong><br>
+                ${v.detalle}<br>
+                $${v.monto}<br>
+                <button class="btn-edit" onclick="editar(${index})">Editar</button>
+                <button class="btn-delete" onclick="eliminar(${index})">Eliminar</button>
+            </div>
+            `;
+        }
+    });
+
+    document.getElementById("totalMes").innerText = totalMes;
+}
+
+render();
+</script>
+
+</body>
+</html>
