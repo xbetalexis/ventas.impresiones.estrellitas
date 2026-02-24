@@ -9,7 +9,7 @@
 body{
     margin:0;
     font-family:'Segoe UI',sans-serif;
-    background: linear-gradient(135deg,#ffd6e8,#d6f0ff);
+    background:linear-gradient(135deg,#ffd6e8,#d6f0ff);
 }
 
 h1{
@@ -19,6 +19,17 @@ h1{
     background:linear-gradient(90deg,#ff9ecb,#9ed8ff);
     color:white;
     letter-spacing:2px;
+}
+
+.top{
+    padding:15px;
+    text-align:center;
+}
+
+input[type="month"]{
+    padding:8px;
+    border-radius:8px;
+    border:1px solid #ffd1e6;
 }
 
 .grid{
@@ -33,23 +44,56 @@ h1{
     border-radius:15px;
     padding:10px;
     box-shadow:0 5px 15px rgba(0,0,0,0.08);
-    display:flex;
-    flex-direction:column;
 }
 
 .day h2{
-    margin:0 0 8px 0;
+    margin:0;
     color:#ff7eb9;
     font-size:16px;
 }
 
+.fecha{
+    font-size:13px;
+    color:#777;
+    margin-bottom:5px;
+}
+
 textarea{
-    flex:1;
+    width:100%;
+    height:60px;
     resize:none;
     border:1px solid #ffd1e6;
     border-radius:8px;
-    padding:8px;
-    font-size:14px;
+    padding:5px;
+    margin-bottom:5px;
+}
+
+input[type="number"]{
+    width:100%;
+    padding:6px;
+    border-radius:8px;
+    border:1px solid #ffd1e6;
+    margin-bottom:5px;
+}
+
+button{
+    width:100%;
+    padding:6px;
+    border:none;
+    border-radius:8px;
+    font-weight:bold;
+    cursor:pointer;
+    margin-bottom:5px;
+}
+
+.btn-guardar{
+    background:linear-gradient(90deg,#ff9ecb,#9ed8ff);
+    color:white;
+}
+
+.btn-borrar{
+    background:#ff6b6b;
+    color:white;
 }
 
 .total-box{
@@ -60,17 +104,6 @@ textarea{
     text-align:center;
     font-weight:bold;
     font-size:18px;
-}
-
-button{
-    margin-top:5px;
-    border:none;
-    border-radius:8px;
-    padding:6px;
-    cursor:pointer;
-    background:#ffc86b;
-    color:white;
-    font-weight:bold;
 }
 
 @media(max-width:600px){
@@ -87,70 +120,72 @@ button{
 
 <h1>🌸 IMPRESIONES ESTRELLITAS 🩵</h1>
 
-<div class="grid">
-
-<div class="day">
-<h2>Lunes</h2>
-<textarea id="lunes" placeholder="Anotar ventas del día..."></textarea>
-<button onclick="borrarDia('lunes')">Borrar</button>
+<div class="top">
+Seleccionar Mes:
+<input type="month" id="mesSelector">
 </div>
 
-<div class="day">
-<h2>Martes</h2>
-<textarea id="martes"></textarea>
-<button onclick="borrarDia('martes')">Borrar</button>
-</div>
-
-<div class="day">
-<h2>Miércoles</h2>
-<textarea id="miercoles"></textarea>
-<button onclick="borrarDia('miercoles')">Borrar</button>
-</div>
-
-<div class="day">
-<h2>Jueves</h2>
-<textarea id="jueves"></textarea>
-<button onclick="borrarDia('jueves')">Borrar</button>
-</div>
-
-<div class="day">
-<h2>Viernes</h2>
-<textarea id="viernes"></textarea>
-<button onclick="borrarDia('viernes')">Borrar</button>
-</div>
-
-<div class="day">
-<h2>Sábado</h2>
-<textarea id="sabado"></textarea>
-<button onclick="borrarDia('sabado')">Borrar</button>
-</div>
-
-<div class="day">
-<h2>Domingo</h2>
-<textarea id="domingo"></textarea>
-<button onclick="borrarDia('domingo')">Borrar</button>
-</div>
+<div class="grid" id="planner"></div>
 
 <div class="total-box">
-Total semanal (manual): $ <input type="number" id="totalSemana" style="width:120px;border-radius:8px;border:1px solid #ffd1e6;padding:5px;">
-</div>
-
+Total del Mes: $ <span id="totalMes">0</span> 🌟
 </div>
 
 <script>
-const dias=["lunes","martes","miercoles","jueves","viernes","sabado","domingo"];
+const diasSemana=["Lunes","Martes","Miércoles","Jueves","Viernes","Sábado","Domingo"];
+const planner=document.getElementById("planner");
+const mesSelector=document.getElementById("mesSelector");
+let datos=JSON.parse(localStorage.getItem("plannerEstrellitas"))||{};
 
-dias.forEach(dia=>{
-    const campo=document.getElementById(dia);
-    campo.value=localStorage.getItem(dia)||"";
-    campo.addEventListener("input",()=>{
-        localStorage.setItem(dia,campo.value);
-    });
-});
+mesSelector.addEventListener("change",crearSemana);
 
-function borrarDia(dia){
-    localStorage.removeItem(dia);
-    document.getElementById(dia).value="";
+function crearSemana(){
+    planner.innerHTML="";
+    const mes=mesSelector.value;
+    if(!mes) return;
+
+    const [year,month]=mes.split("-");
+    let fecha=new Date(year,month-1,1);
+    let total=0;
+
+    for(let i=0;i<7;i++){
+        const fechaTexto=fecha.toISOString().split("T")[0];
+        const clave=fechaTexto;
+
+        const guardado=datos[clave]||{detalle:"",importe:""};
+
+        total+=Number(guardado.importe||0);
+
+        planner.innerHTML+=`
+        <div class="day">
+            <h2>${diasSemana[i]}</h2>
+            <div class="fecha">${fechaTexto}</div>
+            <textarea id="detalle-${clave}" placeholder="Ventas del día...">${guardado.detalle}</textarea>
+            <input type="number" id="importe-${clave}" placeholder="Importe del día" value="${guardado.importe}">
+            <button class="btn-guardar" onclick="guardarDia('${clave}')">Guardar</button>
+            <button class="btn-borrar" onclick="borrarDia('${clave}')">Borrar</button>
+        </div>
+        `;
+
+        fecha.setDate(fecha.getDate()+1);
+    }
+
+    document.getElementById("totalMes").innerText=total;
+}
+
+function guardarDia(clave){
+    const detalle=document.getElementById("detalle-"+clave).value;
+    const importe=document.getElementById("importe-"+clave).value;
+
+    datos[clave]={detalle,importe};
+    localStorage.setItem("plannerEstrellitas",JSON.stringify(datos));
+    crearSemana();
+}
+
+function borrarDia(clave){
+    delete datos[clave];
+    localStorage.setItem("plannerEstrellitas",JSON.stringify(datos));
+    crearSemana();
 }
 </script>
 
