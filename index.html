@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>IMPRESIONES ESTRELLITAS</title>
+<title>PLANNER VENTAS - IMPRESIONES ESTRELLITAS</title>
 
 <style>
 body{
@@ -13,26 +13,40 @@ body{
     overflow-x:hidden;
 }
 
-/* LOGO REDONDO CENTRADO */
-.logo-container{
+/* HEADER SUPERIOR */
+.header{
     display:flex;
+    align-items:center;
     justify-content:center;
-    padding:20px 10px 10px 10px;
+    position:relative;
+    padding:20px;
 }
 
 .logo{
-    width:220px;
-    height:220px;
+    position:absolute;
+    left:20px;
+    width:110px;
+    height:110px;
     object-fit:cover;
     border-radius:50%;
-    box-shadow:0 10px 25px rgba(0,0,0,0.15);
-    border:6px solid white;
+    box-shadow:0 8px 20px rgba(0,0,0,0.15);
+    border:4px solid white;
+}
+
+.header h1{
+    margin:0;
+    font-size:32px;
+    letter-spacing:2px;
+    background:linear-gradient(90deg,#ff7eb9,#9ed8ff);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    font-weight:bold;
 }
 
 /* Selector mes */
 .top{
     text-align:center;
-    padding:15px;
+    padding:10px 15px;
     font-weight:bold;
 }
 
@@ -128,16 +142,22 @@ button{
     }
 
     .logo{
-        width:160px;
-        height:160px;
+        width:70px;
+        height:70px;
+        left:10px;
+    }
+
+    .header h1{
+        font-size:22px;
     }
 }
 </style>
 </head>
 <body>
 
-<div class="logo-container">
+<div class="header">
     <img src="22_01_44.png" class="logo">
+    <h1>PLANNER VENTAS</h1>
 </div>
 
 <div class="top">
