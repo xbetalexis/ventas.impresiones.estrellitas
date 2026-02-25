@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PLANNER VENTAS - IMPRESIONES ESTRELLITAS</title>
+<title>PLANNER VENTAS</title>
 
 <style>
 body{
@@ -63,6 +63,23 @@ body::after{
     font-weight:bold;
 }
 
+/* SELECTOR MES CENTRADO Y CORTO */
+.mes-container{
+    display:flex;
+    justify-content:center;
+    margin:20px 0;
+}
+
+.mes-container input{
+    width:220px;
+    padding:8px;
+    border-radius:8px;
+    border:1px solid #ffd1e6;
+    text-align:center;
+    background:white;
+    font-weight:bold;
+}
+
 /* CALENDARIO */
 .calendar{
     display:grid;
@@ -75,14 +92,15 @@ body::after{
     background:white;
     border-radius:15px;
     padding:8px;
-    min-height:200px;
+    min-height:220px;
     box-shadow:0 4px 10px rgba(0,0,0,0.08);
     font-size:12px;
 }
 
-.day-number{
+.day-header{
     font-weight:bold;
     margin-bottom:5px;
+    color:#ff7eb9;
 }
 
 input{
@@ -158,9 +176,8 @@ button{
     <h1>PLANNER VENTAS</h1>
 </div>
 
-<div style="text-align:center;padding:10px;">
-Seleccionar Mes:
-<input type="month" id="mesSelector">
+<div class="mes-container">
+    <input type="month" id="mesSelector">
 </div>
 
 <div class="calendar" id="calendar"></div>
@@ -173,6 +190,8 @@ Total del Mes: $ <span id="totalMes">0</span>
 const calendar=document.getElementById("calendar");
 const mesSelector=document.getElementById("mesSelector");
 let datos=JSON.parse(localStorage.getItem("ventasEstrellitas"))||{};
+
+const diasNombre=["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
 
 function iniciar(){
     const hoy=new Date();
@@ -194,6 +213,7 @@ function crearCalendario(){
     for(let dia=1;dia<=diasMes;dia++){
         const fecha=new Date(year,month-1,dia);
         const clave=fecha.toISOString().split("T")[0];
+        const nombreDia=diasNombre[fecha.getDay()];
 
         if(!datos[clave]) datos[clave]=[];
 
@@ -202,10 +222,12 @@ function crearCalendario(){
 
         calendar.innerHTML+=`
         <div class="day">
-            <div class="day-number">${dia}</div>
+            <div class="day-header">${nombreDia} ${dia}</div>
+
             <input type="text" id="nombre-${clave}" placeholder="Nombre cliente">
             <input type="number" id="importe-${clave}" placeholder="Importe">
             <button class="btn-add" onclick="agregarVenta('${clave}')">Agregar</button>
+
             <div id="lista-${clave}">
                 ${datos[clave].map((v,i)=>`
                     <div class="venta-item">
@@ -214,6 +236,7 @@ function crearCalendario(){
                     </div>
                 `).join("")}
             </div>
+
             <div class="total-dia">Total Día: $${totalDia}</div>
         </div>
         `;
@@ -226,7 +249,6 @@ function crearCalendario(){
 function agregarVenta(clave){
     const nombre=document.getElementById("nombre-"+clave).value;
     const importe=document.getElementById("importe-"+clave).value;
-
     if(!nombre || !importe) return;
 
     datos[clave].push({nombre,importe});
