@@ -9,17 +9,38 @@
 body{
     margin:0;
     font-family:'Segoe UI',sans-serif;
-    background:linear-gradient(135deg,#ffd6e8,#d6f0ff);
     overflow-x:hidden;
+    position:relative;
 }
 
-/* HEADER SUPERIOR */
+/* FONDO SUAVE CON TU MISMA IMAGEN */
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:url("22_01_44.png") center center no-repeat;
+    background-size:600px;
+    opacity:0.08; /* 👈 ACÁ SE CONTROLA LO SUAVE */
+    z-index:-1;
+}
+
+/* DEGRADADO PASTEL ENCIMA */
+body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:linear-gradient(135deg,#ffd6e8,#d6f0ff);
+    opacity:0.85;
+    z-index:-2;
+}
+
+/* HEADER */
 .header{
     display:flex;
     align-items:center;
     justify-content:center;
     position:relative;
-    padding:70px 20px 20px 20px; /* MÁS ESPACIO ARRIBA */
+    padding:70px 20px 20px 20px;
 }
 
 .logo{
