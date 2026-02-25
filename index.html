@@ -9,17 +9,37 @@
 body{
     margin:0;
     font-family:'Segoe UI',sans-serif;
-    background:linear-gradient(135deg,#ffd6e8,#d6f0ff);
     overflow-x:hidden;
+    position:relative;
 }
 
-/* HEADER SUPERIOR */
+/* FONDO SUAVE */
+body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:url("22_01_44.png") center center no-repeat;
+    background-size:600px;
+    opacity:0.08;
+    z-index:-1;
+}
+
+body::after{
+    content:"";
+    position:fixed;
+    inset:0;
+    background:linear-gradient(135deg,#ffd6e8,#d6f0ff);
+    opacity:0.85;
+    z-index:-2;
+}
+
+/* HEADER */
 .header{
     display:flex;
     align-items:center;
     justify-content:center;
     position:relative;
-    padding:70px 20px 20px 20px; /* MÁS ESPACIO ARRIBA */
+    padding:70px 20px 20px 20px;
 }
 
 .logo{
@@ -43,21 +63,7 @@ body{
     font-weight:bold;
 }
 
-/* Selector mes */
-.top{
-    text-align:center;
-    padding:10px 15px;
-    font-weight:bold;
-}
-
-input[type="month"]{
-    padding:8px;
-    border-radius:8px;
-    border:1px solid #ffd1e6;
-    background:white;
-}
-
-/* Calendario */
+/* CALENDARIO */
 .calendar{
     display:grid;
     grid-template-columns:repeat(7,1fr);
@@ -65,67 +71,70 @@ input[type="month"]{
     padding:15px;
 }
 
-.day-name{
-    text-align:center;
-    font-weight:bold;
-    color:#ff7eb9;
-}
-
 .day{
     background:white;
     border-radius:15px;
     padding:8px;
-    min-height:150px;
+    min-height:200px;
     box-shadow:0 4px 10px rgba(0,0,0,0.08);
-    display:flex;
-    flex-direction:column;
+    font-size:12px;
 }
 
 .day-number{
-    font-size:14px;
     font-weight:bold;
-    color:#777;
+    margin-bottom:5px;
 }
 
-textarea{
-    resize:none;
-    border:1px solid #ffd1e6;
-    border-radius:8px;
+input{
+    width:100%;
+    margin-bottom:4px;
     padding:4px;
-    font-size:12px;
-    margin-top:4px;
-    height:45px;
-}
-
-input[type="number"]{
+    border-radius:6px;
     border:1px solid #ffd1e6;
-    border-radius:8px;
-    padding:4px;
-    margin-top:4px;
-    font-size:12px;
 }
 
 button{
-    margin-top:4px;
-    border:none;
-    border-radius:8px;
+    width:100%;
     padding:4px;
+    border:none;
+    border-radius:6px;
     font-size:12px;
     font-weight:bold;
     cursor:pointer;
+    margin-bottom:4px;
 }
 
-.btn-save{
+.btn-add{
     background:linear-gradient(90deg,#ff9ecb,#9ed8ff);
     color:white;
+}
+
+.venta-item{
+    background:#ffeaf3;
+    padding:4px;
+    border-radius:6px;
+    margin-bottom:4px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 }
 
 .btn-delete{
     background:#ff6b6b;
     color:white;
+    border:none;
+    padding:2px 6px;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:10px;
 }
 
-.total{
+.total-dia{
+    font-weight:bold;
+    margin-top:4px;
+}
+
+.total-mes{
     margin:20px;
     text-align:center;
     font-size:20px;
@@ -135,20 +144,9 @@ button{
     border-radius:15px;
 }
 
-/* Responsive */
 @media(max-width:900px){
     .calendar{
         grid-template-columns:repeat(2,1fr);
-    }
-
-    .logo{
-        width:70px;
-        height:70px;
-        left:10px;
-    }
-
-    .header h1{
-        font-size:22px;
     }
 }
 </style>
@@ -160,23 +158,21 @@ button{
     <h1>PLANNER VENTAS</h1>
 </div>
 
-<div class="top">
+<div style="text-align:center;padding:10px;">
 Seleccionar Mes:
 <input type="month" id="mesSelector">
 </div>
 
 <div class="calendar" id="calendar"></div>
 
-<div class="total">
-Total del Mes: $ <span id="totalMes">0</span> 🌟
+<div class="total-mes">
+Total del Mes: $ <span id="totalMes">0</span>
 </div>
 
 <script>
 const calendar=document.getElementById("calendar");
 const mesSelector=document.getElementById("mesSelector");
-let datos=JSON.parse(localStorage.getItem("calendarioEstrellitas"))||{};
-
-const diasNombre=["Dom","Lun","Mar","Mié","Jue","Vie","Sáb"];
+let datos=JSON.parse(localStorage.getItem("ventasEstrellitas"))||{};
 
 function iniciar(){
     const hoy=new Date();
@@ -193,77 +189,56 @@ function crearCalendario(){
 
     const [year,month]=mes.split("-");
     const diasMes=new Date(year,month,0).getDate();
-    const primerDia=new Date(year,month-1,1).getDay();
-    let total=0;
-
-    diasNombre.forEach(d=>{
-        calendar.innerHTML+=`<div class="day-name">${d}</div>`;
-    });
-
-    for(let i=0;i<primerDia;i++){
-        calendar.innerHTML+=`<div></div>`;
-    }
+    let totalMes=0;
 
     for(let dia=1;dia<=diasMes;dia++){
         const fecha=new Date(year,month-1,dia);
         const clave=fecha.toISOString().split("T")[0];
-        const guardado=datos[clave]||{detalle:"",importe:""};
-        total+=Number(guardado.importe||0);
+
+        if(!datos[clave]) datos[clave]=[];
+
+        let totalDia=datos[clave].reduce((sum,v)=>sum+Number(v.importe),0);
+        totalMes+=totalDia;
 
         calendar.innerHTML+=`
         <div class="day">
             <div class="day-number">${dia}</div>
-            <textarea id="detalle-${clave}" placeholder="Ventas...">${guardado.detalle}</textarea>
-            <input type="number" id="importe-${clave}" placeholder="$" value="${guardado.importe}">
-            <button class="btn-save" onclick="guardar('${clave}')">Guardar</button>
-            <button class="btn-delete" onclick="borrar('${clave}')">Borrar</button>
+            <input type="text" id="nombre-${clave}" placeholder="Nombre cliente">
+            <input type="number" id="importe-${clave}" placeholder="Importe">
+            <button class="btn-add" onclick="agregarVenta('${clave}')">Agregar</button>
+            <div id="lista-${clave}">
+                ${datos[clave].map((v,i)=>`
+                    <div class="venta-item">
+                        ${v.nombre} - $${v.importe}
+                        <button class="btn-delete" onclick="borrarVenta('${clave}',${i})">X</button>
+                    </div>
+                `).join("")}
+            </div>
+            <div class="total-dia">Total Día: $${totalDia}</div>
         </div>
         `;
     }
 
-    document.getElementById("totalMes").innerText=total;
+    document.getElementById("totalMes").innerText=totalMes;
+    localStorage.setItem("ventasEstrellitas",JSON.stringify(datos));
 }
 
-function guardar(clave){
-    const detalle=document.getElementById("detalle-"+clave).value;
+function agregarVenta(clave){
+    const nombre=document.getElementById("nombre-"+clave).value;
     const importe=document.getElementById("importe-"+clave).value;
-    datos[clave]={detalle,importe};
-    localStorage.setItem("calendarioEstrellitas",JSON.stringify(datos));
+
+    if(!nombre || !importe) return;
+
+    datos[clave].push({nombre,importe});
     crearCalendario();
 }
 
-function borrar(clave){
-    delete datos[clave];
-    localStorage.setItem("calendarioEstrellitas",JSON.stringify(datos));
+function borrarVenta(clave,index){
+    datos[clave].splice(index,1);
     crearCalendario();
 }
 
 iniciar();
-
-/* Estrellitas flotando */
-function crearEstrella(){
-    const estrella=document.createElement("div");
-    estrella.innerHTML="✨";
-    estrella.style.position="fixed";
-    estrella.style.left=Math.random()*100+"vw";
-    estrella.style.bottom="-20px";
-    estrella.style.fontSize=(Math.random()*12+10)+"px";
-    estrella.style.opacity="0.4";
-    estrella.style.pointerEvents="none";
-    estrella.style.transition="all 5s linear";
-    document.body.appendChild(estrella);
-
-    setTimeout(()=>{
-        estrella.style.bottom="100vh";
-        estrella.style.opacity="0";
-    },100);
-
-    setTimeout(()=>{
-        estrella.remove();
-    },5000);
-}
-
-setInterval(crearEstrella,1200);
 </script>
 
 </body>
